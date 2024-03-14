@@ -1,83 +1,118 @@
-import Link from "next/link"
-import { Post } from "@prisma/client"
-import { formatDate } from "@/lib/utils"
-import { Skeleton } from "@/components/ui/skeleton"
-import { PostOperations } from "@/components/post-operations"
-import { Checkbox } from "@/components/ui/checkbox"
-import { PostCreateButton } from "./post-create-button"
-import { Icons } from "@/components/icons"
+"use client"
+import { Icons } from "@/components/icons";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Todo } from "@prisma/client";
+import { toast } from "@/components/ui/use-toast"
+import { useRouter } from "next/navigation";
+import { Skeleton } from "./ui/skeleton";
+import { useState } from "react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from "@radix-ui/react-alert-dialog";
+import { AlertDialogHeader, AlertDialogFooter } from "./ui/alert-dialog";
+import { buttonVariants } from "./ui/button";
+import { cn } from "@/lib/utils";
+import * as z from "zod"
+import { todoPatchSchema } from "@/lib/validations/todo";
 
-interface PostItemProps {
-  post: Pick<Post, "id" | "title" | "published" | "createdAt">
+
+interface TodoItemProps {
+  todo: Pick<Todo, "id" | "title" | "complete" | "createdAt" | "updatedAt" | "userId" >;
 }
-interface PostItemPropsNew {
-  postId : Number,
-  postTitle : String, 
-  postChecked : Boolean, 
+
+type data = z.infer<typeof todoPatchSchema>
+
+
+async function deleteTodo(todoId: string) {
+  const response = await fetch(`/api/todos/${todoId}`, {
+    method: "DELETE",
+  })
+
+  if (!response?.ok) {
+    toast({
+      title: "Something went wrong.",
+      description: "Your post was not deleted. Please try again.",
+      variant: "destructive",
+    })
+  }
+  return true
 }
-export function PostItem({ postTitle, postChecked, postId }: PostItemPropsNew) {
+
+
+
+
+
+export function PostItem({ todo }: TodoItemProps) {
+  const router = useRouter();
+
+  // const update = async (todo: Todo) => {
+  //   await fetch(`/api/todos/${todo.id}`, {
+  //     method: "PATCH",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       complete: !todo.complete,
+  //     }),
+  //   });
+  //   router.refresh();
+  // };
+
+  async function updateTodo(todoId: string) {
+    const response = await fetch(`/api/todos/${todoId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        complete: !todo.complete,
+      }),
+    })
+  
+    if (!response?.ok) {
+      toast({
+        title: "Something went wrong.",
+        description: "Your post was not deleted. Please try again.",
+        variant: "destructive",
+      })
+    }
+    return true
+  }
+
   return (
-    // <div className="flex items-center justify-between p-4">
-    //   <div className="grid gap-1 border">
-    //        Hello
-    //   </div>
-    //   {/* <PostOperations post={{ id: post.id, title: post.title }} /> */}
-    // </div>
+    <>
+      <span className="flex flex-1 gap-2 p-6">
 
 
+<Checkbox 
+ onCheckedChange={async (event) => {
 
-// <div className="container">
-// <div className="mx-auto grid w-full justify-center">
-//   <div className="relative w-full overflow-hidden rounded-lg border bg-background p-6 shadow-md xl:grid xl:grid-cols-[500px]">
-//     <div className="m-3 flex items-center justify-between space-y-2 bg-slate-50 p-4 xl:grid xl:grid-cols-[auto,1fr] xl:p-3">
-//       <Checkbox /> 
-//       <p className="text-lg font-semibold"> {postTitle} </p>
-//     </div>
-//     <PostCreateButton />
-//   </div>
- 
-// </div>
+          const edited = await updateTodo(todo.id)
 
-// </div>
-
-<>
-  <main className="grid items-center justify-center p-6">
-    <div className="flex h-[400px] w-[450px] flex-col rounded-md py-6 text-slate-800 shadow-lg">
-      {/* Increased shadow and added rounded-md */}
-      <h1 className="text-center text-3xl">My to dos</h1>
-      
-      <div className="mx-8 mb-6 mt-4">
-          <form className="flex items-center gap-3">
-            <input
-              type="text"
-              name="title"
-              placeholder="New todo"
-              className=" flex-1 rounded-full border-slate-400  bg-slate-50 px-2 py-1 outline-none placeholder:text-slate-300 focus-within:border-slate-100 focus-within:bg-slate-100"
-              required
-            />
-           <PostCreateButton />
-          </form>
-        </div>
-
-      <ul className="px-6">
-        <li className="flex px-4">
-          <span className="flex flex-1 gap-2 p-6">
-            <Checkbox /> {postTitle}
-          </span>
-          <button className="mr-3 text-slate-500 hover:text-slate-800">
-          <Icons.trash className="mr-2 h-4 w-4" />
-          </button>
-        </li>
-      </ul>
-    </div>
-    {/* <div className="flex items-center justify-center p-2 ">
-      <PostCreateButton />
-    </div> */}
-  </main>
-</>
+          if (edited) {
+            router.refresh()
+          }
+        }} 
+// onCheckedChange={() => update(todo)}
+        checked={todo.complete} 
+        /> {todo.title}
+      </span>
 
 
-  )
+      <button
+        className="mr-3 text-slate-500 hover:text-slate-800"
+        onClick={async (event) => {
+          event.preventDefault()
+
+          const deleted = await deleteTodo(todo.id)
+
+          if (deleted) {
+            router.refresh()
+          }
+        }}
+      >
+        <Icons.trash className="mr-2 h-4 w-4" />
+      </button>
+    </>
+  );
 }
 
 PostItem.Skeleton = function PostItemSkeleton() {

@@ -22,6 +22,7 @@ import {
   Trash,
   Twitter,
   User,
+  Edit,
   X,
   type Icon as LucideIcon,
 } from "lucide-react"
@@ -29,6 +30,7 @@ import {
 export type Icon = LucideIcon
 
 export const Icons = {
+  edit: Edit,
   logo: Command,
   close: X,
   spinner: Loader2,

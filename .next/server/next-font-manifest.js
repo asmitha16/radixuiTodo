@@ -1,0 +1,13 @@
+self.__NEXT_FONT_MANIFEST={
+  "pages": {},
+  "app": {
+    "/Volumes/Projects/radixTODO/radixuiTodo/node_modules/.pnpm/next@13.3.2-canary.13_@babel+core@7.21.4_@opentelemetry+api@1.1.0_react-dom@18.2.0_react@18.2.0/node_modules/next/font/google/target.css?{\"path\":\"app/layout.tsx\",\"import\":\"Inter\",\"arguments\":[{\"subsets\":[\"latin\"],\"variable\":\"--font-sans\"}],\"variableName\":\"fontSans\"}": [
+      "static/media/c9a5bc6a7c948fb0-s.p.woff2"
+    ],
+    "/Volumes/Projects/radixTODO/radixuiTodo/node_modules/.pnpm/next@13.3.2-canary.13_@babel+core@7.21.4_@opentelemetry+api@1.1.0_react-dom@18.2.0_react@18.2.0/node_modules/next/font/local/target.css?{\"path\":\"app/layout.tsx\",\"import\":\"\",\"arguments\":[{\"src\":\"../assets/fonts/CalSans-SemiBold.woff2\",\"variable\":\"--font-heading\"}],\"variableName\":\"fontHeading\"}": [
+      "static/media/90475aac776488b6-s.p.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pagesUsingSizeAdjust": false
+}

@@ -17,30 +17,31 @@ export function PostCreateButton({
 }: PostCreateButtonProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
-
+  const [newItem, setNewItem] = React.useState('')
   async function onClick() {
     setIsLoading(true)
 
-    const response = await fetch("/api/posts", {
+    const response = await fetch("/api/todos", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title: "Untitled Post",
+        title: newItem,
+        complete: false
       }),
     })
 
     setIsLoading(false)
 
     if (!response?.ok) {
-      if (response.status === 402) {
-        return toast({
-          title: "Limit of 3 tasks reached.",
-          description: "Please upgrade to the PRO plan.",
-          variant: "destructive",
-        })
-      }
+      // if (response.status === 402) {
+      //   return toast({
+      //     title: "Limit of 3 tasks reached.",
+      //     description: "Please upgrade to the PRO plan.",
+      //     variant: "destructive",
+      //   })
+      // }
 
       return toast({
         title: "Something went wrong.",
@@ -49,15 +50,25 @@ export function PostCreateButton({
       })
     }
 
-    const post = await response.json()
+    // const todo = await response.json()
 
-    // This forces a cache invalidation.
-    router.refresh()
+   router.refresh()
 
-    router.push(`/editor/${post.id}`)
+   setNewItem('')
   }
 
   return (
+
+    <form onSubmit={onClick} className="flex items-center gap-3">
+    <input
+      type="text"
+      required
+      value={newItem}
+      onChange={(e) => setNewItem(e.target.value)}
+      name="title"
+      placeholder="New todo"
+      className=" flex-1 rounded-full border-slate-400  bg-slate-50 px-2 py-1 outline-none placeholder:text-slate-300 focus-within:border-slate-100 focus-within:bg-slate-100"
+    />
     <button
       onClick={onClick}
       className={cn(
@@ -67,7 +78,7 @@ export function PostCreateButton({
         },
         // className
       )}
-      disabled={isLoading}
+      disabled={isLoading || newItem.trim() === ""}
       {...props}
     >
       {isLoading ? (
@@ -76,5 +87,8 @@ export function PostCreateButton({
         <Icons.add className="h-4 w-4" />
       )}
     </button>
+  </form>
+
+   
   )
 }
